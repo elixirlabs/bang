@@ -44,42 +44,33 @@ defmodule Bang do
   """
   defmacro __before_compile__(env) do
     bangs = Module.get_attribute(env.module, :bang)
-    for {funcs, {callback_mdl, callback_fn}} <- bangs do
-      create_funcs(env.module, funcs, callback_mdl, callback_fn)
+    for {fn_list, {cb_mdl, cb_fn}} <- bangs do
+      create_funcs(env.module, fn_list, cb_mdl, cb_fn)
     end
   end
 
-  defp create_funcs(func_mdl, funcs, callback_mdl, callback_fn) do
-    for {func, arg_cnt} <- funcs do
-      create_func(func_mdl, func, arg_cnt, callback_mdl, callback_fn)
+  defp create_funcs(fn_mdl, fn_list, cb_mdl, cb_fn) do
+    for {fn_name, arg_cnt} <- fn_list do
+      create_func(fn_mdl, fn_name, arg_cnt, cb_mdl, cb_fn)
     end
   end
 
-  defp create_func(func_mdl, func, arg_cnt, callback_mdl, callback_fn) do
-    bang_func = String.to_atom "#{func}!"
-    func_args = create_args(func_mdl, arg_cnt)
-
-    ast = create_ast(func_mdl, func, func_args, bang_func,
-      callback_mdl, callback_fn)
-
-    Macro.postwalk(ast, fn
-      ({func_name, context, []}) when func_name == bang_func ->
-        {func_name, context, func_args}
-      (other) -> other
-    end)
+  defp create_func(fn_mdl, fn_name, arg_cnt, cb_mdl, cb_fn) do
+    fn_args = create_args(fn_mdl, arg_cnt)
+    create_ast(fn_mdl, fn_name, fn_args, :"#{fn_name}!", cb_mdl, cb_fn)
   end
 
-  defp create_args(func_mdl, 0),
+  defp create_args(_, 0),
     do: []
-  defp create_args(func_mdl, arg_cnt),
-    do: Enum.map(1..arg_cnt, &(Macro.var (String.to_atom "arg#{&1}"), func_mdl))
+  defp create_args(fn_mdl, arg_cnt),
+    do: Enum.map(1..arg_cnt, &(Macro.var (:"arg#{&1}"), fn_mdl))
 
-  defp create_ast(func_mdl, func, func_args, bang_func, callback_mdl, callback_fn) do
+  defp create_ast(fn_mdl, fn_name, fn_args, bang_func, cb_mdl, cb_fn) do
     quote do
       @doc false
-      def unquote(bang_func)() do
-        value = apply(unquote(func_mdl), unquote(func), unquote(func_args))
-        apply(unquote(callback_mdl), unquote(callback_fn), [value])
+      def unquote(bang_func)(unquote_splicing(fn_args)) do
+        value = apply(unquote(fn_mdl), unquote(fn_name), unquote(fn_args))
+        apply(unquote(cb_mdl), unquote(cb_fn), [value])
       end
     end
   end
