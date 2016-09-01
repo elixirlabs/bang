@@ -36,7 +36,7 @@ defmodule SampleModule do
   def welcome(name), do: "Welcome #{name}!"
   def welcome(prefix, name), do: "Welcome #{prefix}. #{name}!"
 
-  @bang {[good_bye: 1, welcome: 2], {SampleModule, :titleize}}
+  @bang {[good_bye: 1, good_bye: 2], {SampleModule, :titleize}}
   def good_bye(name), do: "Good bye #{name}!"
   def good_bye(prefix, name), do: "Good bye #{prefix}. #{name}!"
 
