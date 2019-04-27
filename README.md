@@ -72,10 +72,6 @@ defmodule SomeModule
 end
 ```
 
-### Sample projects using `Bang` package:
-
-https://github.com/mustafaturan/oceanex
-
 ## Contributing
 
 ### Issues, Bugs, Documentation, Enhancements
