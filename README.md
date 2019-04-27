@@ -8,19 +8,19 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
   1. Add `bang` to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [{:bang, "~> 0.1.0"}]
-    end
-    ```
+```elixir
+def deps do
+  [{:bang, "~> 0.1.0"}]
+end
+```
 
   2. Ensure `bang` is started before your application:
 
-    ```elixir
-    def application do
-      [applications: [:bang]]
-    end
-    ```
+```elixir
+def application do
+  [applications: [:bang]]
+end
+```
 
 ## Usage
 
